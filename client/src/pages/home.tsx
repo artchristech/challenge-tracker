@@ -123,7 +123,8 @@ export default function Home() {
           {/* Single CSS Grid Layout */}
           <div className="grid gap-1 mx-auto max-w-fit" style={{ 
             gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
-            gridTemplateRows: 'auto repeat(6, 24px)' 
+            gridTemplateRows: 'auto repeat(6, 24px)',
+            transform: 'translateX(-10px)'
           }}>
             {/* Empty top-left cell */}
             <div></div>
