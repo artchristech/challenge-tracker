@@ -1,0 +1,61 @@
+We're looking to pivot our application from a single workout tracker to a more versatile multi-habit tracker. This requires a significant UI overhaul in client/src/pages/home.tsx to allow users to dynamically add and track multiple habits. The goal is to create a unified view where users can see their progress across all their habits in a single, intuitive grid.
+
+Requirements:
+
+Dynamic Habit Input:
+
+Replace the static "60-Day Workout Challenge" header with a more generic "Habit Tracker."
+
+At the top of the page, add a new section that allows users to define their own habits. This should include:
+
+An input field where users can type the name of a new habit (e.g., "Workout," "Read," "Meditate").
+
+An "Add Habit" button to add the new habit to their tracker.
+
+Unified Grid View:
+
+The existing calendar grid needs to be replaced with a more flexible grid that can display multiple habits.
+
+Rows: Each row in the grid should represent a different habit that the user has added. The habit name should be displayed as the row label.
+
+Columns: The columns should continue to represent the days of the challenge (1-60).
+
+Cells: Each cell at the intersection of a habit and a day should be a clickable element (e.g., a button or a styled div) that allows the user to mark that habit as complete for that day.
+
+Gradient-Based Progress Indication:
+
+Instead of a simple binary "completed" or "incomplete" state, we want to show a visual gradient that represents the user's consistency.
+
+The color of each cell should change based on the number of habits completed on that day. For instance:
+
+0 habits completed: Light gray
+
+1 habit completed: A light shade of green
+
+Multiple habits completed: A darker shade of green, with the intensity of the color increasing with the number of completed habits.
+
+State Management:
+
+The component's state, currently managed in the progress and progress2 variables, needs to be refactored.
+
+The new state should be an array of habit objects. Each habit object should have:
+
+name: A string for the habit's name.
+
+completedDays: An array of booleans of length 60, just like the current implementation.
+
+The localStorage logic needs to be updated to save and load this new array of habits.
+
+Remove Redundant Elements:
+
+The second workout tracker and its associated state (progress2, completedCount2, etc.) should be removed.
+
+The hardcoded workoutTypes array should also be removed.
+
+Implementation Details:
+
+All changes should be implemented in the client/src/pages/home.tsx file.
+
+You will need to create new UI components for the habit input form.
+
+The existing grid logic can be adapted to dynamically generate rows based on the new habits state.
