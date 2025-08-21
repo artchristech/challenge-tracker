@@ -117,7 +117,71 @@ export default function Home() {
           </div>
         </div>
 
-        
+        {/* Workout Grid */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
+          
+          {/* Single CSS Grid Layout */}
+          <div className="grid gap-1" style={{ 
+            gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
+            gridTemplateRows: 'auto repeat(6, 24px)' 
+          }}>
+            {/* Empty top-left cell */}
+            <div></div>
+            
+            {/* Week headers */}
+            {cycles.map((cycle) => (
+              <div 
+                key={`header-${cycle.cycleNumber}`} 
+                className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
+              >
+                {cycle.cycleNumber}
+              </div>
+            ))}
+
+            {/* Workout type rows */}
+            {workoutTypes.map((workoutType, workoutIndex) => [
+              /* Workout type label */
+              <div 
+                key={`label-${workoutType}`}
+                className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
+              >
+                {workoutType}
+              </div>,
+              
+              /* Day buttons for this workout type */
+              ...cycles.map((cycle) => {
+                const dayIndex = workoutIndex; // 0-5 for each workout type
+                const day = cycle.days[dayIndex];
+                return (
+                  <button
+                    key={`day-${day.dayNumber}`}
+                    onClick={() => toggleDay(day.dayNumber - 1)}
+                    className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                      day.completed
+                        ? 'bg-primary text-white hover:bg-primary/90'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                  >
+                    {day.dayNumber}
+                  </button>
+                );
+              })
+            ]).flat()}
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+              <span>Incomplete</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-primary rounded"></div>
+              <span>Completed</span>
+            </div>
+          </div>
+        </div>
 
         {/* Reset Button */}
         <div className="text-center mt-8">
