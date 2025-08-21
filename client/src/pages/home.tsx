@@ -170,17 +170,7 @@ export default function Home() {
             ]).flat()}
           </div>
 
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 rounded"></div>
-              <span>Incomplete</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-primary rounded"></div>
-              <span>Completed</span>
-            </div>
-          </div>
+          
         </div>
 
         {/* Reset Button */}
