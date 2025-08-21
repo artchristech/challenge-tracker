@@ -173,15 +173,7 @@ export default function Home() {
           
         </div>
 
-        {/* Reset Button */}
-        <div className="text-center mt-8">
-          <button 
-            onClick={resetProgress}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors duration-200"
-          >
-            Reset Progress
-          </button>
-        </div>
+        
 
       </main>
     </div>
