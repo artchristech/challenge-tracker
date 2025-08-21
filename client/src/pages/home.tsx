@@ -95,7 +95,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
               <div className="text-3xl font-bold text-primary">{completedCount}</div>
-              <div className="text-muted-foreground text-sm">Days Completed</div>
+              <div className="text-muted-foreground text-sm"></div>
             </div>
             <div className="text-center sm:text-right">
               <div className="text-3xl font-bold text-muted-foreground">60</div>
