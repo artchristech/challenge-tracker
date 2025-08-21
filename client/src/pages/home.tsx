@@ -264,12 +264,9 @@ export default function Home() {
           
           {/* Single CSS Grid Layout */}
           <div className="grid gap-1 mx-auto max-w-fit" style={{ 
-            gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
-            gridTemplateRows: 'auto repeat(6, 24px)',
-            transform: 'translateX(-10px)'
+            gridTemplateColumns: 'repeat(10, minmax(24px, 1fr))', 
+            gridTemplateRows: 'auto repeat(6, 24px)'
           }}>
-            {/* Empty top-left cell */}
-            <div></div>
             
             {/* Week headers */}
             {cycles2.map((cycle) => (
@@ -283,14 +280,6 @@ export default function Home() {
 
             {/* Workout type rows */}
             {workoutTypes.map((workoutType, workoutIndex) => [
-              /* Workout type label */
-              <div 
-                key={`label2-${workoutType}`}
-                className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
-              >
-                {workoutType}
-              </div>,
-              
               /* Day buttons for this workout type */
               ...cycles2.map((cycle) => {
                 const dayIndex = workoutIndex; // 0-5 for each workout type
