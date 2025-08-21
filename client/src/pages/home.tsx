@@ -97,13 +97,9 @@ export default function Home() {
               <div className="text-3xl font-bold text-primary">{completedCount}</div>
               <div className="text-muted-foreground text-sm">Days Completed</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">{progress.currentDay}</div>
-              <div className="text-muted-foreground text-sm">Current Day</div>
-            </div>
             <div className="text-center sm:text-right">
               <div className="text-3xl font-bold text-muted-foreground">60</div>
-              <div className="text-muted-foreground text-sm">Total Days</div>
+              <div className="text-muted-foreground text-sm"></div>
             </div>
           </div>
           
