@@ -119,7 +119,6 @@ export default function Home() {
 
         {/* Workout Grid */}
         <div className="px-2">
-          <h2 className="text-lg font-semibold text-foreground mb-6 text-center">Workout Calendar</h2>
           
           {/* Single CSS Grid Layout */}
           <div className="grid gap-1 mx-auto max-w-fit" style={{ 
