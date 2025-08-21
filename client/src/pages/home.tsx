@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WorkoutProgress {
   completedDays: boolean[];
@@ -6,6 +7,7 @@ interface WorkoutProgress {
 }
 
 export default function Home() {
+  const isMobile = useIsMobile();
   const [progress, setProgress] = useState<WorkoutProgress>({
     completedDays: Array(60).fill(false),
     currentDay: 1
@@ -63,15 +65,20 @@ export default function Home() {
   const completedCount = progress.completedDays.filter(Boolean).length;
   const progressPercentage = Math.round((completedCount / 60) * 100);
 
-  // Create grid structure: 10 cycles of 6 days each
-  const cycles = Array.from({ length: 10 }, (_, cycleIndex) => {
-    const startDay = cycleIndex * 6;
+  // Create grid structure: responsive layout
+  const columnsCount = isMobile ? 5 : 10;
+  const rowsCount = isMobile ? 12 : 6;
+  const cycles = Array.from({ length: columnsCount }, (_, cycleIndex) => {
+    const startDay = cycleIndex * rowsCount;
     return {
       cycleNumber: cycleIndex + 1,
-      days: Array.from({ length: 6 }, (_, dayIndex) => ({
-        dayNumber: startDay + dayIndex + 1,
-        completed: progress.completedDays[startDay + dayIndex]
-      }))
+      days: Array.from({ length: rowsCount }, (_, dayIndex) => {
+        const dayNumber = startDay + dayIndex + 1;
+        return dayNumber <= 60 ? {
+          dayNumber,
+          completed: progress.completedDays[startDay + dayIndex]
+        } : null;
+      }).filter((day): day is NonNullable<typeof day> => day !== null)
     };
   });
 
@@ -79,29 +86,29 @@ export default function Home() {
     <div className="bg-background min-h-screen">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-foreground text-center">60-Day Workout Challenge</h1>
-          <p className="text-muted-foreground text-center mt-2">Click each day to mark your workout complete</p>
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground text-center">60-Day Workout Challenge</h1>
+          <p className="text-muted-foreground text-center mt-2 text-sm sm:text-base">Click each day to mark your workout complete</p>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         
         {/* Progress Stats */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
-              <div className="text-3xl font-bold text-primary">{completedCount}</div>
-              <div className="text-muted-foreground text-sm">Days Completed</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">{completedCount}</div>
+              <div className="text-muted-foreground text-xs sm:text-sm">Days Completed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">{progress.currentDay}</div>
-              <div className="text-muted-foreground text-sm">Current Day</div>
+              <div className="text-2xl sm:text-3xl font-bold text-foreground">{progress.currentDay}</div>
+              <div className="text-muted-foreground text-xs sm:text-sm">Current Day</div>
             </div>
             <div className="text-center sm:text-right">
-              <div className="text-3xl font-bold text-muted-foreground">60</div>
-              <div className="text-muted-foreground text-sm">Total Days</div>
+              <div className="text-2xl sm:text-3xl font-bold text-muted-foreground">60</div>
+              <div className="text-muted-foreground text-xs sm:text-sm">Total Days</div>
             </div>
           </div>
           
@@ -121,27 +128,27 @@ export default function Home() {
         </div>
 
         {/* Workout Grid */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">Workout Calendar</h2>
           
           {/* Cycle Labels */}
-          <div className="grid grid-cols-10 gap-2 mb-4">
+          <div className={`grid gap-2 mb-4 ${isMobile ? 'grid-cols-5' : 'grid-cols-10'}`}>
             {cycles.map((cycle) => (
               <div key={cycle.cycleNumber} className="text-center text-xs text-muted-foreground font-medium">
-                Cycle {cycle.cycleNumber}
+                {isMobile ? `C${cycle.cycleNumber}` : `Cycle ${cycle.cycleNumber}`}
               </div>
             ))}
           </div>
 
           {/* Grid Container */}
-          <div className="grid grid-cols-10 gap-2">
+          <div className={`grid gap-2 ${isMobile ? 'grid-cols-5' : 'grid-cols-10'}`}>
             {cycles.map((cycle) => (
               <div key={cycle.cycleNumber} className="flex flex-col gap-1">
                 {cycle.days.map((day) => (
                   <button
                     key={day.dayNumber}
                     onClick={() => toggleDay(day.dayNumber - 1)}
-                    className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                    className={`${isMobile ? 'w-12 h-12 text-sm' : 'w-8 h-8 text-xs'} rounded cursor-pointer transition-colors duration-200 flex items-center justify-center font-medium ${
                       day.completed
                         ? 'bg-primary text-white hover:bg-primary/90'
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
@@ -155,23 +162,23 @@ export default function Home() {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-4 sm:mt-6 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-200 rounded"></div>
               <span>Incomplete</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-primary rounded"></div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-primary rounded"></div>
               <span>Completed</span>
             </div>
           </div>
         </div>
 
         {/* Reset Button */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6 sm:mt-8">
           <button 
             onClick={resetProgress}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base"
           >
             Reset Progress
           </button>
