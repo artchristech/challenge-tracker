@@ -233,7 +233,7 @@ export default function Home() {
         </div>
 
         {/* Progress Stats 2 */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 mt-16">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
               <div className="text-3xl font-bold text-primary">{completedCount2}</div>
