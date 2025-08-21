@@ -1,0 +1,210 @@
+Here are the changes I've made to client/src/pages/home.tsx:
+
+Added a list of workout types: "Push", "Pull", "Legs", "Arms", "Spa", and "Cardio".
+
+These workout types are now displayed as row labels next to the calendar grid, so you can see which workout corresponds to each day of the week.
+
+The column headers have been updated from "Cycle" to "Week" to make the calendar more intuitive.
+
+Here is the updated code for WorkoutTracker/client/src/pages/home.tsx:
+
+TypeScript
+
+import { useState, useEffect } from 'react';
+
+interface WorkoutProgress {
+  completedDays: boolean[];
+  currentDay: number;
+}
+
+export default function Home() {
+  const [progress, setProgress] = useState<WorkoutProgress>({
+    completedDays: Array(60).fill(false),
+    currentDay: 1
+  });
+
+  // Load progress from localStorage on component mount
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('workoutProgress');
+    if (savedProgress) {
+      try {
+        const parsed = JSON.parse(savedProgress);
+        setProgress(parsed);
+      } catch (error) {
+        console.error('Failed to parse saved progress:', error);
+      }
+    }
+  }, []);
+
+  // Save progress to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('workoutProgress', JSON.stringify(progress));
+  }, [progress]);
+
+  const toggleDay = (dayIndex: number) => {
+    setProgress(prev => {
+      const newCompletedDays = [...prev.completedDays];
+      newCompletedDays[dayIndex] = !newCompletedDays[dayIndex];
+      
+      // Update current day to be the next incomplete day
+      let newCurrentDay = 1;
+      for (let i = 0; i < 60; i++) {
+        if (!newCompletedDays[i]) {
+          newCurrentDay = i + 1;
+          break;
+        }
+        if (i === 59) {
+          newCurrentDay = 60; // All days completed
+        }
+      }
+
+      return {
+        completedDays: newCompletedDays,
+        currentDay: newCurrentDay
+      };
+    });
+  };
+
+  const resetProgress = () => {
+    setProgress({
+      completedDays: Array(60).fill(false),
+      currentDay: 1
+    });
+  };
+
+  const completedCount = progress.completedDays.filter(Boolean).length;
+  const progressPercentage = Math.round((completedCount / 60) * 100);
+
+  // Create grid structure: 10 cycles of 6 days each
+  const cycles = Array.from({ length: 10 }, (_, cycleIndex) => {
+    const startDay = cycleIndex * 6;
+    return {
+      cycleNumber: cycleIndex + 1,
+      days: Array.from({ length: 6 }, (_, dayIndex) => ({
+        dayNumber: startDay + dayIndex + 1,
+        completed: progress.completedDays[startDay + dayIndex]
+      }))
+    };
+  });
+
+  const workoutTypes = ["Push", "Pull", "Legs", "Arms", "Spa", "Cardio"];
+
+  return (
+    <div className="bg-background min-h-screen">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <h1 className="text-2xl font-bold text-foreground text-center">60-Day Workout Challenge</h1>
+          <p className="text-muted-foreground text-center mt-2">Click each day to mark your workout complete</p>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        
+        {/* Progress Stats */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-center sm:text-left">
+              <div className="text-3xl font-bold text-primary">{completedCount}</div>
+              <div className="text-muted-foreground text-sm">Days Completed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-foreground">{progress.currentDay}</div>
+              <div className="text-muted-foreground text-sm">Current Day</div>
+            </div>
+            <div className="text-center sm:text-right">
+              <div className="text-3xl font-bold text-muted-foreground">60</div>
+              <div className="text-muted-foreground text-sm">Total Days</div>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-6">
+            <div className="flex justify-between text-sm text-muted-foreground mb-2">
+              <span>Progress</span>
+              <span>{progressPercentage}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Workout Grid */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
+          
+          <div className="flex gap-4">
+            {/* Workout Day Labels */}
+            <div className="flex flex-col gap-1" style={{ marginTop: '28px' }}>
+              {workoutTypes.map((type) => (
+                <div key={type} className="h-8 flex items-center text-xs text-muted-foreground font-medium pr-2 text-right">
+                  {type}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex-1">
+              {/* Cycle Labels */}
+              <div className="grid grid-cols-10 gap-2 mb-4">
+                {cycles.map((cycle) => (
+                  <div key={cycle.cycleNumber} className="text-center text-xs text-muted-foreground font-medium">
+                    Week {cycle.cycleNumber}
+                  </div>
+                ))}
+              </div>
+
+              {/* Grid Container */}
+              <div className="grid grid-cols-10 gap-2">
+                {cycles.map((cycle) => (
+                  <div key={cycle.cycleNumber} className="flex flex-col gap-1">
+                    {cycle.days.map((day) => (
+                      <button
+                        key={day.dayNumber}
+                        onClick={() => toggleDay(day.dayNumber - 1)}
+                        className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                          day.completed
+                            ? 'bg-primary text-white hover:bg-primary/90'
+                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        }`}
+                      >
+                        {day.dayNumber}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+              <span>Incomplete</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-primary rounded"></div>
+              <span>Completed</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Reset Button */}
+        <div className="text-center mt-8">
+          <button 
+            onClick={resetProgress}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+          >
+            Reset Progress
+          </button>
+        </div>
+
+      </main>
+    </div>
+  );
+}
