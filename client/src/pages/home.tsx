@@ -135,7 +135,7 @@ export default function Home() {
                 key={`header-${cycle.cycleNumber}`} 
                 className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
               >
-                Week {cycle.cycleNumber}
+                {cycle.cycleNumber}
               </div>
             ))}
 
