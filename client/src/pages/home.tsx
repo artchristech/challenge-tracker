@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ProfileButton } from '@/components/ProfileButton';
 
 interface WorkoutProgress {
   completedDays: boolean[];
@@ -82,7 +83,10 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground text-center">Challenge Tracker</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Challenge Tracker</h1>
+            <ProfileButton />
+          </div>
         </div>
       </header>
       {/* Main Content */}
