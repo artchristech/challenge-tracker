@@ -121,47 +121,53 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
           
-          <div className="flex gap-4">
-            {/* Workout Day Labels */}
-            <div className="flex flex-col gap-1" style={{ marginTop: '28px' }}>
-              {workoutTypes.map((type) => (
-                <div key={type} className="h-8 flex items-center text-xs text-muted-foreground font-medium pr-2 text-right">
-                  {type}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex-1">
-              {/* Cycle Labels */}
-              <div className="grid grid-cols-10 gap-2 mb-4">
-                {cycles.map((cycle) => (
-                  <div key={cycle.cycleNumber} className="text-center text-xs text-muted-foreground font-medium">
-                    Week {cycle.cycleNumber}
-                  </div>
-                ))}
+          {/* Single CSS Grid Layout */}
+          <div className="grid gap-2" style={{ 
+            gridTemplateColumns: 'auto repeat(10, minmax(32px, 1fr))', 
+            gridTemplateRows: 'auto repeat(6, 32px)' 
+          }}>
+            {/* Empty top-left cell */}
+            <div></div>
+            
+            {/* Week headers */}
+            {cycles.map((cycle) => (
+              <div 
+                key={`header-${cycle.cycleNumber}`} 
+                className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
+              >
+                Week {cycle.cycleNumber}
               </div>
+            ))}
 
-              {/* Grid Container */}
-              <div className="grid grid-cols-10 gap-2">
-                {cycles.map((cycle) => (
-                  <div key={cycle.cycleNumber} className="flex flex-col gap-1">
-                    {cycle.days.map((day) => (
-                      <button
-                        key={day.dayNumber}
-                        onClick={() => toggleDay(day.dayNumber - 1)}
-                        className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
-                          day.completed
-                            ? 'bg-primary text-white hover:bg-primary/90'
-                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                        }`}
-                      >
-                        {day.dayNumber}
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Workout type rows */}
+            {workoutTypes.map((workoutType, workoutIndex) => [
+              /* Workout type label */
+              <div 
+                key={`label-${workoutType}`}
+                className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
+              >
+                {workoutType}
+              </div>,
+              
+              /* Day buttons for this workout type */
+              ...cycles.map((cycle) => {
+                const dayIndex = workoutIndex; // 0-5 for each workout type
+                const day = cycle.days[dayIndex];
+                return (
+                  <button
+                    key={`day-${day.dayNumber}`}
+                    onClick={() => toggleDay(day.dayNumber - 1)}
+                    className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                      day.completed
+                        ? 'bg-primary text-white hover:bg-primary/90'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                  >
+                    {day.dayNumber}
+                  </button>
+                );
+              })
+            ]).flat()}
           </div>
 
           {/* Legend */}
