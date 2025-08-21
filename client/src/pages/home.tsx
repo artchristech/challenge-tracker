@@ -118,11 +118,11 @@ export default function Home() {
         </div>
 
         {/* Workout Grid */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
+        <div className="px-2">
+          <h2 className="text-lg font-semibold text-foreground mb-6 text-center">Workout Calendar</h2>
           
           {/* Single CSS Grid Layout */}
-          <div className="grid gap-1" style={{ 
+          <div className="grid gap-1 mx-auto max-w-fit" style={{ 
             gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
             gridTemplateRows: 'auto repeat(6, 24px)' 
           }}>
