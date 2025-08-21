@@ -200,33 +200,36 @@ export default function Home() {
             ))}
 
             {/* Workout type rows */}
-            {workoutTypes.map((workoutType, workoutIndex) => [
-              /* Workout type label */
-              <div 
-                key={`label-${workoutType}`}
-                className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
-              >
-                {workoutType}
-              </div>,
-              
-              /* Day buttons for this workout type */
-              ...cycles.map((cycle) => {
-                const dayIndex = workoutIndex; // 0-5 for each workout type
-                const day = cycle.days[dayIndex];
-                return (
-                  <button
-                    key={`day-${day.dayNumber}`}
-                    onClick={() => toggleDay(day.dayNumber - 1)}
-                    className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
-                      day.completed
-                        ? 'bg-green-500 text-white hover:bg-green-600'
-                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                    }`}
-                  >
-                  </button>
-                );
-              })
-            ]).flat()}
+            {workoutTypes.map((workoutType, workoutIndex) => {
+              const rowElements = [
+                /* Workout type label */
+                <div 
+                  key={`label-${workoutType}`}
+                  className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
+                >
+                  {workoutType}
+                </div>,
+                
+                /* Day buttons for this workout type */
+                ...cycles.map((cycle) => {
+                  const dayIndex = workoutIndex; // 0-5 for each workout type
+                  const day = cycle.days[dayIndex];
+                  return (
+                    <button
+                      key={`day-${day.dayNumber}`}
+                      onClick={() => toggleDay(day.dayNumber - 1)}
+                      className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                        day.completed
+                          ? 'bg-green-500 text-white hover:bg-green-600'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                      }`}
+                    >
+                    </button>
+                  );
+                })
+              ];
+              return rowElements;
+            }).flat()}
           </div>
 
           
@@ -279,25 +282,28 @@ export default function Home() {
             ))}
 
             {/* Workout type rows */}
-            {workoutTypes.map((workoutType, workoutIndex) => [
-              /* Day buttons for this workout type */
-              ...cycles2.map((cycle) => {
-                const dayIndex = workoutIndex; // 0-5 for each workout type
-                const day = cycle.days[dayIndex];
-                return (
-                  <button
-                    key={`day2-${day.dayNumber}`}
-                    onClick={() => toggleDay2(day.dayNumber - 1)}
-                    className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
-                      day.completed
-                        ? 'bg-green-500 text-white hover:bg-green-600'
-                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                    }`}
-                  >
-                  </button>
-                );
-              })
-            ]).flat()}
+            {workoutTypes.map((workoutType, workoutIndex) => {
+              const rowElements = [
+                /* Day buttons for this workout type */
+                ...cycles2.map((cycle) => {
+                  const dayIndex = workoutIndex; // 0-5 for each workout type
+                  const day = cycle.days[dayIndex];
+                  return (
+                    <button
+                      key={`day2-${day.dayNumber}`}
+                      onClick={() => toggleDay2(day.dayNumber - 1)}
+                      className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                        day.completed
+                          ? 'bg-green-500 text-white hover:bg-green-600'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                      }`}
+                    >
+                    </button>
+                  );
+                })
+              ];
+              return rowElements;
+            }).flat()}
           </div>
 
           
