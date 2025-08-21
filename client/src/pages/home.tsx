@@ -225,65 +225,62 @@ export default function Home() {
           
         </div>
 
-        {/* Reading Section */}
+        {/* Reading Progress */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
-              <h2 className="text-xl font-bold text-foreground mb-2">Reading Challenge</h2>
               <div className="text-3xl font-bold text-primary">{completedBooksCount}</div>
-              <div className="text-muted-foreground text-sm">books completed</div>
             </div>
             <div className="text-center sm:text-right">
               <div className="text-3xl font-bold text-muted-foreground">12</div>
-              <div className="text-muted-foreground text-sm">total books</div>
+              <div className="text-muted-foreground text-sm"></div>
             </div>
           </div>
           
-          {/* Reading Progress Bar */}
-          <div className="mb-6">
+          {/* Progress Bar */}
+          <div className="mt-6">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
               <span>Progress</span>
               <span>{readingProgressPercentage}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                className="bg-primary h-2 rounded-full transition-all duration-300" 
                 style={{ width: `${readingProgressPercentage}%` }}
               ></div>
             </div>
           </div>
+        </div>
 
-          {/* Reading Grid - Just X labels, no Y labels */}
-          <div className="px-2">
-            <div className="grid gap-1 mx-auto max-w-fit" style={{ 
-              gridTemplateColumns: 'repeat(12, minmax(32px, 1fr))', 
-              gridTemplateRows: 'auto 32px'
-            }}>
-              {/* Book number headers */}
-              {Array.from({ length: 12 }, (_, index) => (
-                <div 
-                  key={`book-header-${index + 1}`} 
-                  className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
-                >
-                  {index + 1}
-                </div>
-              ))}
-              
-              {/* Book buttons */}
-              {Array.from({ length: 12 }, (_, index) => (
-                <button
-                  key={`book-${index + 1}`}
-                  onClick={() => toggleBook(index)}
-                  className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
-                    readingProgress.completedBooks[index]
-                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                  }`}
-                >
-                  📖
-                </button>
-              ))}
-            </div>
+        {/* Reading Grid */}
+        <div className="px-2">
+          <div className="grid gap-1 mx-auto max-w-fit" style={{ 
+            gridTemplateColumns: 'repeat(12, minmax(24px, 1fr))', 
+            gridTemplateRows: 'auto 24px'
+          }}>
+            {/* Book headers */}
+            {Array.from({ length: 12 }, (_, index) => (
+              <div 
+                key={`book-header-${index + 1}`} 
+                className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
+              >
+                {index + 1}
+              </div>
+            ))}
+            
+            {/* Book buttons */}
+            {Array.from({ length: 12 }, (_, index) => (
+              <button
+                key={`book-${index + 1}`}
+                onClick={() => toggleBook(index)}
+                className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                  readingProgress.completedBooks[index]
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                }`}
+              >
+              </button>
+            ))}
           </div>
         </div>
 
