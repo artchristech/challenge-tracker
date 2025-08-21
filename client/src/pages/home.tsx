@@ -158,11 +158,10 @@ export default function Home() {
                     onClick={() => toggleDay(day.dayNumber - 1)}
                     className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
                       day.completed
-                        ? 'bg-primary text-white hover:bg-primary/90'
+                        ? 'bg-green-500 text-white hover:bg-green-600'
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
                   >
-                    {day.dayNumber}
                   </button>
                 );
               })
