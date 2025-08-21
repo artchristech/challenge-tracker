@@ -122,9 +122,9 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-foreground mb-6">Workout Calendar</h2>
           
           {/* Single CSS Grid Layout */}
-          <div className="grid gap-2" style={{ 
-            gridTemplateColumns: 'auto repeat(10, minmax(32px, 1fr))', 
-            gridTemplateRows: 'auto repeat(6, 32px)' 
+          <div className="grid gap-1" style={{ 
+            gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
+            gridTemplateRows: 'auto repeat(6, 24px)' 
           }}>
             {/* Empty top-left cell */}
             <div></div>
@@ -157,7 +157,7 @@ export default function Home() {
                   <button
                     key={`day-${day.dayNumber}`}
                     onClick={() => toggleDay(day.dayNumber - 1)}
-                    className={`w-8 h-8 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                    className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
                       day.completed
                         ? 'bg-primary text-white hover:bg-primary/90'
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
