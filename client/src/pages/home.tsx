@@ -1,101 +1,82 @@
 import { useState, useEffect } from 'react';
 import { ProfileButton } from '@/components/ProfileButton';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus } from 'lucide-react';
 
-interface Habit {
-  name: string;
+interface WorkoutProgress {
   completedDays: boolean[];
-}
-
-interface HabitTrackerState {
-  habits: Habit[];
+  currentDay: number;
 }
 
 export default function Home() {
-  const [habitTracker, setHabitTracker] = useState<HabitTrackerState>({
-    habits: []
+  const [progress, setProgress] = useState<WorkoutProgress>({
+    completedDays: Array(60).fill(false),
+    currentDay: 1
   });
-  const [newHabitName, setNewHabitName] = useState('');
 
-  // Load habits from localStorage on component mount
+  // Load progress from localStorage on component mount
   useEffect(() => {
-    const savedHabits = localStorage.getItem('habitTracker');
-    if (savedHabits) {
+    const savedProgress = localStorage.getItem('workoutProgress');
+    if (savedProgress) {
       try {
-        const parsed = JSON.parse(savedHabits);
-        setHabitTracker(parsed);
+        const parsed = JSON.parse(savedProgress);
+        setProgress(parsed);
       } catch (error) {
-        console.error('Failed to parse saved habits:', error);
+        console.error('Failed to parse saved progress:', error);
       }
     }
   }, []);
 
-  // Save habits to localStorage whenever it changes
+  // Save progress to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('habitTracker', JSON.stringify(habitTracker));
-  }, [habitTracker]);
+    localStorage.setItem('workoutProgress', JSON.stringify(progress));
+  }, [progress]);
 
-  const toggleDay = (habitIndex: number, dayIndex: number) => {
-    setHabitTracker(prev => {
-      const newHabits = [...prev.habits];
-      const newCompletedDays = [...newHabits[habitIndex].completedDays];
+  const toggleDay = (dayIndex: number) => {
+    setProgress(prev => {
+      const newCompletedDays = [...prev.completedDays];
       newCompletedDays[dayIndex] = !newCompletedDays[dayIndex];
       
-      newHabits[habitIndex] = {
-        ...newHabits[habitIndex],
-        completedDays: newCompletedDays
-      };
+      // Update current day to be the next incomplete day
+      let newCurrentDay = 1;
+      for (let i = 0; i < 60; i++) {
+        if (!newCompletedDays[i]) {
+          newCurrentDay = i + 1;
+          break;
+        }
+        if (i === 59) {
+          newCurrentDay = 60; // All days completed
+        }
+      }
 
       return {
-        habits: newHabits
+        completedDays: newCompletedDays,
+        currentDay: newCurrentDay
       };
     });
   };
 
-  const addHabit = () => {
-    if (newHabitName.trim()) {
-      setHabitTracker(prev => ({
-        habits: [...prev.habits, {
-          name: newHabitName.trim(),
-          completedDays: Array(60).fill(false)
-        }]
-      }));
-      setNewHabitName('');
-    }
+  const resetProgress = () => {
+    setProgress({
+      completedDays: Array(60).fill(false),
+      currentDay: 1
+    });
   };
 
-  const removeHabit = (habitIndex: number) => {
-    setHabitTracker(prev => ({
-      habits: prev.habits.filter((_, index) => index !== habitIndex)
-    }));
-  };
+  const completedCount = progress.completedDays.filter(Boolean).length;
+  const progressPercentage = Math.round((completedCount / 60) * 100);
 
-  // Calculate overall progress across all habits
-  const totalPossibleCompletions = habitTracker.habits.length * 60;
-  const totalCompletions = habitTracker.habits.reduce((sum, habit) => 
-    sum + habit.completedDays.filter(Boolean).length, 0
-  );
-  const overallProgressPercentage = totalPossibleCompletions > 0 
-    ? Math.round((totalCompletions / totalPossibleCompletions) * 100) 
-    : 0;
+  // Create grid structure: 10 cycles of 6 days each
+  const cycles = Array.from({ length: 10 }, (_, cycleIndex) => {
+    const startDay = cycleIndex * 6;
+    return {
+      cycleNumber: cycleIndex + 1,
+      days: Array.from({ length: 6 }, (_, dayIndex) => ({
+        dayNumber: startDay + dayIndex + 1,
+        completed: progress.completedDays[startDay + dayIndex]
+      }))
+    };
+  });
 
-  // Helper function to get color intensity based on completion count for a day
-  const getDayColorIntensity = (dayIndex: number) => {
-    const completionsForDay = habitTracker.habits.reduce((count, habit) => 
-      count + (habit.completedDays[dayIndex] ? 1 : 0), 0
-    );
-    const maxHabits = habitTracker.habits.length;
-    
-    if (completionsForDay === 0) return 'bg-gray-200';
-    if (maxHabits === 0) return 'bg-gray-200';
-    
-    const intensity = completionsForDay / maxHabits;
-    if (intensity <= 0.33) return 'bg-green-200';
-    if (intensity <= 0.66) return 'bg-green-400';
-    return 'bg-green-600';
-  };
+  const workoutTypes = ["Push", "Pull", "Legs", "Arms", "Spa", "Cardio"];
 
   return (
     <div className="bg-background min-h-screen">
@@ -103,7 +84,7 @@ export default function Home() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Habit Tracker</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Challenge Tracker</h1>
             <ProfileButton />
           </div>
         </div>
@@ -111,120 +92,87 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         
-        {/* Add New Habit Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Add New Habit</h2>
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Enter habit name (e.g., Workout, Read, Meditate)"
-              value={newHabitName}
-              onChange={(e) => setNewHabitName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addHabit()}
-              className="flex-1"
-            />
-            <Button onClick={addHabit} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Habit
-            </Button>
-          </div>
-        </div>
-
         {/* Progress Stats */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
-              <div className="text-3xl font-bold text-primary">{totalCompletions}</div>
-              <div className="text-muted-foreground text-sm">Total Completions</div>
+              <div className="text-3xl font-bold text-primary">{completedCount}</div>
             </div>
             <div className="text-center sm:text-right">
-              <div className="text-3xl font-bold text-muted-foreground">{totalPossibleCompletions}</div>
-              <div className="text-muted-foreground text-sm">Total Possible</div>
+              <div className="text-3xl font-bold text-muted-foreground">60</div>
+              <div className="text-muted-foreground text-sm"></div>
             </div>
           </div>
           
           {/* Progress Bar */}
           <div className="mt-6">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
-              <span>Overall Progress</span>
-              <span>{overallProgressPercentage}%</span>
+              <span>Progress</span>
+              <span>{progressPercentage}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-primary h-2 rounded-full transition-all duration-300" 
-                style={{ width: `${overallProgressPercentage}%` }}
+                style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
           </div>
         </div>
 
-        {/* Habit Grid */}
-        {habitTracker.habits.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4">60-Day Habit Progress</h2>
+        {/* Workout Grid */}
+        <div className="px-2">
+          
+          {/* Single CSS Grid Layout */}
+          <div className="grid gap-1 mx-auto max-w-fit" style={{ 
+            gridTemplateColumns: 'auto repeat(10, minmax(24px, 1fr))', 
+            gridTemplateRows: 'auto repeat(6, 24px)',
+            transform: 'translateX(-10px)'
+          }}>
+            {/* Empty top-left cell */}
+            <div></div>
             
-            {/* Grid Layout */}
-            <div className="overflow-x-auto">
-              <div className="grid gap-1 mx-auto max-w-fit" style={{ 
-                gridTemplateColumns: `auto repeat(60, minmax(20px, 1fr))`,
-                gridTemplateRows: `auto repeat(${habitTracker.habits.length}, 24px)`
-              }}>
-                {/* Empty top-left cell */}
-                <div></div>
-                
-                {/* Day headers (1-60) */}
-                {Array.from({ length: 60 }, (_, dayIndex) => (
-                  <div 
-                    key={`day-header-${dayIndex + 1}`}
-                    className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center min-w-[20px]"
-                  >
-                    {dayIndex + 1}
-                  </div>
-                ))}
-
-                {/* Habit rows */}
-                {habitTracker.habits.map((habit, habitIndex) => [
-                  /* Habit name label */
-                  <div 
-                    key={`label-${habit.name}-${habitIndex}`}
-                    className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end min-w-[80px] truncate"
-                  >
-                    {habit.name}
-                    <button
-                      onClick={() => removeHabit(habitIndex)}
-                      className="ml-2 text-red-400 hover:text-red-600 text-xs"
-                      title="Remove habit"
-                    >
-                      ×
-                    </button>
-                  </div>,
-                  
-                  /* Day buttons for this habit */
-                  ...Array.from({ length: 60 }, (_, dayIndex) => (
-                    <button
-                      key={`habit-${habitIndex}-day-${dayIndex}`}
-                      onClick={() => toggleDay(habitIndex, dayIndex)}
-                      className={`w-5 h-5 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
-                        habit.completedDays[dayIndex]
-                          ? 'bg-green-500 text-white hover:bg-green-600'
-                          : `${getDayColorIntensity(dayIndex)} hover:bg-gray-300`
-                      }`}
-                    >
-                    </button>
-                  ))
-                ]).flat()}
+            {/* Week headers */}
+            {cycles.map((cycle) => (
+              <div 
+                key={`header-${cycle.cycleNumber}`} 
+                className="text-center text-xs text-muted-foreground font-medium flex items-center justify-center"
+              >
+                {cycle.cycleNumber}
               </div>
-            </div>
-          </div>
-        )}
+            ))}
 
-        {/* Empty state when no habits */}
-        {habitTracker.habits.length === 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <h3 className="text-lg font-medium text-muted-foreground mb-2">No habits yet!</h3>
-            <p className="text-muted-foreground">Add your first habit above to start tracking your 60-day journey.</p>
+            {/* Workout type rows */}
+            {workoutTypes.map((workoutType, workoutIndex) => [
+              /* Workout type label */
+              <div 
+                key={`label-${workoutType}`}
+                className="flex items-center text-xs text-muted-foreground font-medium pr-3 text-right justify-end"
+              >
+                {workoutType}
+              </div>,
+              
+              /* Day buttons for this workout type */
+              ...cycles.map((cycle) => {
+                const dayIndex = workoutIndex; // 0-5 for each workout type
+                const day = cycle.days[dayIndex];
+                return (
+                  <button
+                    key={`day-${day.dayNumber}`}
+                    onClick={() => toggleDay(day.dayNumber - 1)}
+                    className={`w-6 h-6 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center text-xs font-medium ${
+                      day.completed
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                  >
+                  </button>
+                );
+              })
+            ]).flat()}
           </div>
-        )}
+
+          
+        </div>
 
 
       </main>
